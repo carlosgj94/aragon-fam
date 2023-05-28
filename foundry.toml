@@ -1,7 +1,7 @@
 [profile.default]
   optimizer = true
   optimizer_runs = 10_000_000
-  solc_version = "0.8.16"
+  solc_version = "0.8.20"
   verbosity = 3
 
 [profile.ci]
@@ -24,3 +24,11 @@
   single_line_statement_blocks = "single"
   tab_width = 2
   wrap_comments = true
+
+[rpc_endpoints]
+  goerli = "${GOERLI_RPC_URL}"
+  opti_goerli = "${OPTI_GOERLI_URL}"
+
+[etherscan]
+  goerli = { key = "${ETHERSCAN_API_KEY}" }
+  opti_goerli = { key = "${ETHERSCAN_API_KEY}"}

@@ -1,16 +1,25 @@
 // SPDX-License-Identifier: UNLICENSED
-
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.20;
 
 import "forge-std/Script.sol";
-import {Counter} from "src/Counter.sol";
+import {DAOProxyFactory} from "src/DAOProxyFactory.sol";
+import {IL2CrossDomainMessenger} from "src/interfaces/IL2CrossDomainMessenger.sol";
 
 contract Deploy is Script {
-  Counter counter;
+  DAOProxyFactory daoFactory;
+  IL2CrossDomainMessenger xDomainMessenger;
+  uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+  address defaultMessenger = address(0x4200000000000000000000000000000000000007);
 
-  function run() public {
-    // Commented out for now until https://github.com/crytic/slither/pull/1461 is released.
-    // vm.startBroadcast();
-    counter = new Counter();
+  function run(address _xDomainMessenger) public {
+    vm.startBroadcast(deployerPrivateKey);
+
+    xDomainMessenger = IL2CrossDomainMessenger(
+      _xDomainMessenger == address(0) ? defaultMessenger : _xDomainMessenger
+    );
+
+    daoFactory = new DAOProxyFactory(xDomainMessenger);
+
+    vm.stopBroadcast();
   }
 }
