@@ -1,6 +1,9 @@
 # Aragon Fam
+<img src="./space-eagle.png" width="100" height="100">
+A portal for your Aragon DAO to any chain.
+Right now it supports any OP based L2 through the official bridge. But I'm working on adding other rollups and chains like Polygon.
 
-A solution to
+
 ## Local build & testing
 
 This repo uses Foundry. Install it as follows:
