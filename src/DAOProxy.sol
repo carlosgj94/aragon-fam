@@ -4,9 +4,10 @@ pragma solidity ^0.8.20;
 import {IL2CrossDomainMessenger} from "src/interfaces/IL2CrossDomainMessenger.sol";
 import {hasBit, flipBit} from "src/utils/BitMap.sol";
 import {Initializable} from "openzeppelin/proxy/utils/initializable.sol";
+import {ReentrancyGuard} from "openzeppelin/security/ReentrancyGuard.sol";
 
 
-contract DAOProxy is Initializable {
+contract DAOProxy is Initializable, ReentrancyGuard {
     /// @notice Thrown if the action array length is larger than `MAX_ACTIONS`.
     error TooManyActions();
 
@@ -48,11 +49,10 @@ contract DAOProxy is Initializable {
         parentDAO = _parentDAO;
     }
 
-    // TODO: nonReentrant
     function execute(
         Action[] calldata _actions,
         uint256 _allowFailureMap
-    ) external onlyParentDAO {
+    ) external onlyParentDAO nonReentrant {
         if (_actions.length > MAX_ACTIONS) {
             revert TooManyActions();
         }
