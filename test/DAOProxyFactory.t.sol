@@ -6,13 +6,19 @@ import {Deploy} from "script/Deploy.s.sol";
 import {DeployMocks} from "script/DeployMocks.s.sol";
 import {DAOProxyFactory} from "src/DAOProxyFactory.sol";
 import {DAOProxy} from "src/DAOProxy.sol";
+import {MockStorage} from "test/mocks/MockStorage.sol";
 
 contract DAOProxyFactoryTest is Test, Deploy, DeployMocks {
     address bob = address(0xB0B);
     DAOProxy proxy;
+    struct Action {
+        address to;
+        uint256 value;
+        bytes data;
+    }
 
     function setUp() public {
-        DeployMocks.runMessenger();
+        DeployMocks.runMocks();
         Deploy.run(address(mockMessenger));
 
         vm.startPrank(bob);
@@ -51,16 +57,31 @@ contract CreateProxy is DAOProxyFactoryTest {
     }
 
     function test_CallProxyDAO() public {
+        uint256 number = mockStorage.getNumberStorage();
+        assertEq(number, uint256(0));
+
         vm.startPrank(bob);
+
+        Action[] memory actions = new Action[](1);
+        actions[0] = Action({
+                to: address(mockStorage),
+                value: uint256(0),
+                data: abi.encodePacked(
+                    mockStorage.setNumberStorage.selector, uint256(69)
+                )
+            })  
+        ;
 
         mockMessenger.relayMessage(
             address(proxy),
             bob,
-            abi.encodePacked(proxy.setNumberStorage.selector, uint256(69)),
+            abi.encodePacked(
+                proxy.execute.selector, abi.encode(actions), uint256(2)
+            ),
             0
         );
         vm.stopPrank();
-        uint number = proxy.getNumberStorage();
+        number = mockStorage.getNumberStorage();
         assertEq(number, uint256(69));
     }
 }
