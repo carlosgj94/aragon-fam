@@ -7,7 +7,7 @@ contract DAOProxy {
     IL2CrossDomainMessenger public bridge;
     address public parentDAO;
 
-    uint256 numberStorage;
+    uint256 public numberStorage;
 
     modifier onlyParentDAO() {
         require(
@@ -21,6 +21,10 @@ contract DAOProxy {
     constructor(IL2CrossDomainMessenger _bridge, address _parentDAO) {
         bridge = _bridge;
         parentDAO = _parentDAO;
+    }
+
+    function getNumberStorage() public view returns(uint256) {
+        return numberStorage;
     }
 
     function setNumberStorage(uint256 _numberStorage) public onlyParentDAO {
