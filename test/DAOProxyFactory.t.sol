@@ -19,7 +19,7 @@ contract DAOProxyFactoryTest is Test, Deploy, DeployMocks {
 
     function setUp() public {
         DeployMocks.runMocks();
-        Deploy.run(address(mockMessenger));
+        Deploy.runTests(address(mockMessenger));
 
         vm.startPrank(bob);
         vm.recordLogs();
@@ -32,7 +32,7 @@ contract DAOProxyFactoryTest is Test, Deploy, DeployMocks {
         vm.stopPrank();
 
         Vm.Log[] memory entries = vm.getRecordedLogs();
-        proxy = DAOProxy(address(uint160(uint256(entries[0].topics[1]))));
+        proxy = DAOProxy(address(uint160(uint256(entries[1].topics[1]))));
     }
 }
 
@@ -51,8 +51,8 @@ contract CreateProxy is DAOProxyFactoryTest {
         vm.stopPrank();
 
         Vm.Log[] memory entries = vm.getRecordedLogs();
-        DAOProxy _proxy = DAOProxy(address(uint160(uint256(entries[0].topics[1]))));
-        assertEq(entries.length, 1);
+        DAOProxy _proxy = DAOProxy(address(uint160(uint256(entries[1].topics[1]))));
+        assertEq(entries.length, 2);
         assertEq(_proxy.parentDAO(), dad);
     }
 

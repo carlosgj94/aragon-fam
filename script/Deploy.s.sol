@@ -4,21 +4,30 @@ pragma solidity ^0.8.20;
 import "forge-std/Script.sol";
 import {DAOProxyFactory} from "src/DAOProxyFactory.sol";
 import {IL2CrossDomainMessenger} from "src/interfaces/IL2CrossDomainMessenger.sol";
+import {DAOProxy} from "src/DAOProxy.sol";
 
 contract Deploy is Script {
   DAOProxyFactory daoFactory;
-  IL2CrossDomainMessenger xDomainMessenger;
+  DAOProxy daoProxy;
   uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-  address defaultMessenger = address(0x4200000000000000000000000000000000000007);
+  IL2CrossDomainMessenger xDomainMessenger = IL2CrossDomainMessenger(0x4200000000000000000000000000000000000007);
 
-  function run(address _xDomainMessenger) public {
+  function run() public {
     vm.startBroadcast(deployerPrivateKey);
 
-    xDomainMessenger = IL2CrossDomainMessenger(
-      _xDomainMessenger == address(0) ? defaultMessenger : _xDomainMessenger
-    );
+    daoProxy = new DAOProxy();
+    daoFactory = new DAOProxyFactory(xDomainMessenger, address(daoProxy));
 
-    daoFactory = new DAOProxyFactory(xDomainMessenger);
+    vm.stopBroadcast();
+  }
+
+  function runTests(address _xDomainMessenger) public {
+    vm.startBroadcast(deployerPrivateKey);
+
+    xDomainMessenger = IL2CrossDomainMessenger(_xDomainMessenger);
+
+    daoProxy = new DAOProxy();
+    daoFactory = new DAOProxyFactory(xDomainMessenger, address(daoProxy));
 
     vm.stopBroadcast();
   }

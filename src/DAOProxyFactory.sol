@@ -3,14 +3,17 @@ pragma solidity ^0.8.20;
 
 import {IL2CrossDomainMessenger} from "src/interfaces/IL2CrossDomainMessenger.sol";
 import {DAOProxy} from "src/DAOProxy.sol";
+import {Clones} from "openzeppelin/proxy/Clones.sol";
 
 contract DAOProxyFactory {
    event DAOProxyDeployed(address indexed _proxyDAO, address indexed _parentDAO, uint _chainId);
 
     IL2CrossDomainMessenger bridge;
+    address proxyDAOImplementation;
 
-    constructor(IL2CrossDomainMessenger _bridge) {
+    constructor(IL2CrossDomainMessenger _bridge, address _proxyDAOImplementation) {
         bridge = _bridge;
+        proxyDAOImplementation = _proxyDAOImplementation;
     }
 
      modifier onlyBridge() {
@@ -18,10 +21,11 @@ contract DAOProxyFactory {
         _;
     }
 
-    function createDAOProxy() external payable onlyBridge {
+    function createDAOProxy() external onlyBridge {
         address _sender = bridge.xDomainMessageSender();
 
-        address daoProxy = address(new DAOProxy{salt: toBytes(_sender)}(bridge, _sender));
+        address daoProxy = Clones.cloneDeterministic(proxyDAOImplementation, toBytes(_sender));
+        DAOProxy(daoProxy).initialize(bridge, _sender);
 
         emit DAOProxyDeployed(daoProxy, _sender, 1);
     }

@@ -3,9 +3,10 @@ pragma solidity ^0.8.20;
 
 import {IL2CrossDomainMessenger} from "src/interfaces/IL2CrossDomainMessenger.sol";
 import {hasBit, flipBit} from "src/utils/BitMap.sol";
+import {Initializable} from "openzeppelin/proxy/utils/initializable.sol";
 
 
-contract DAOProxy {
+contract DAOProxy is Initializable {
     /// @notice Thrown if the action array length is larger than `MAX_ACTIONS`.
     error TooManyActions();
 
@@ -42,7 +43,7 @@ contract DAOProxy {
         _;
     }
 
-    constructor(IL2CrossDomainMessenger _bridge, address _parentDAO) {
+    function initialize(IL2CrossDomainMessenger _bridge, address _parentDAO) initializer public {
         bridge = _bridge;
         parentDAO = _parentDAO;
     }
