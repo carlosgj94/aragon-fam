@@ -1,4 +1,5 @@
 [profile.default]
+  gas_reports = ["DAOProxyFactory", "DAOProxy"]
   optimizer = true
   optimizer_runs = 10_000_000
   solc_version = "0.8.20"
@@ -31,4 +32,4 @@
 
 [etherscan]
   goerli = { key = "${ETHERSCAN_API_KEY}" }
-  opti_goerli = { key = "${ETHERSCAN_API_KEY}"}
+  opti_goerli = { key = "${ETHERSCAN_API_KEY}" }

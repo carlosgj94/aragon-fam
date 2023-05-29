@@ -10,7 +10,8 @@ contract Deploy is Script {
   DAOProxyFactory daoFactory;
   DAOProxy daoProxy;
   uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-  IL2CrossDomainMessenger xDomainMessenger = IL2CrossDomainMessenger(0x4200000000000000000000000000000000000007);
+  IL2CrossDomainMessenger xDomainMessenger =
+    IL2CrossDomainMessenger(0x4200000000000000000000000000000000000007);
 
   function run() public {
     vm.startBroadcast(deployerPrivateKey);
